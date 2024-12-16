@@ -1,41 +1,99 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
+import { UsersType } from "@/types/User";
 
 // Single User Component
-export const User = ({ name, lastAction }: { name: string; lastAction: string }) => {
+export const User = ({
+  user,
+  lastAction,
+  isFocused,
+  onClick,
+}: {
+  user: UsersType;
+  lastAction: string;
+  isFocused: boolean;
+  onClick: () => void;
+}) => {
   return (
-    <div className="d-flex p-2 align-items-center">
-      {/* User Avatar */}
+    <div
+      className={`d-flex p-2 align-items-center custom-hover ${
+        isFocused ? "bg-primary text-white" : "bg-white"
+      }`}
+      style={{ cursor: "pointer", transition: "background-color 0.3s ease" }}
+      onClick={onClick}
+    >
       <img
-        src="https://www.simplyrecipes.com/thmb/2MQuChhZANaSSxdL1a0tA6nBgmQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__simply_recipes__uploads__2019__09__easy-pepperoni-pizza-lead-4-82c60893fcad4ade906a8a9f59b8da9d.jpg"
+        src={user.avatar}
         className="rounded-circle mx-3"
-        alt="Pizza"
-        style={{ height: "50px", width: "50px" }}
+        alt="User Avatar"
+        style={{ width: "50px", height: "50px" }}
       />
-      {/* User Info */}
-      <div className="flex-grow-1">
-        <div className="text-truncate border border-danger">{name}</div>
-        <div className="text-truncate border border-danger">{lastAction}</div>
+      <div>
+        <div className="fw-bold">{user.username}</div>
+        <div className="text-muted">{lastAction}</div>
       </div>
     </div>
   );
 };
 
-// Users Container Component
-function Users() {
-  useEffect(() => {
-    // Load Bootstrap JavaScript for interactive components
-    require("bootstrap/dist/js/bootstrap.bundle.min.js");
-  }, []);
+// Users Component
+const Users = ({
+  activeUserId,
+  setActiveUserId,
+  setActiveChatId,
+}: {
+  activeUserId: string | null;
+  setActiveUserId: (id: string) => void;
+  setActiveChatId: (chatId: string) => void;
+}) => {
+  const usersData: UsersType[] = [
+    {
+      id: "1",
+      email: "johndoe@example.com",
+      username: "John Doe",
+      firstName: "John",
+      lastName: "Doe",
+      avatar: "https://via.placeholder.com/50",
+    },
+    {
+      id: "2",
+      email: "janesmith@example.com",
+      username: "Jane Smith",
+      firstName: "Jane",
+      lastName: "Smith",
+      avatar: "https://via.placeholder.com/50",
+    },
+    {
+      id: "3",
+      email: "chrisevans@example.com",
+      username: "Chris Evans",
+      firstName: "Chris",
+      lastName: "Evans",
+      avatar: "https://via.placeholder.com/50",
+    },
+  ];
+
+  const handleUserClick = (id: string, chatId: string) => {
+    setActiveUserId(id); // Update active user ID
+    setActiveChatId(chatId); // Update active chat ID
+  };
 
   return (
-    <div className="border border-danger overflow-auto" style={{ height: "100vh", width: "40vw" }}>
-      {/* Multiple Users */}
-      <User name="John Doe" lastAction="Sent a message" />
-      <User name="Jane Smith" lastAction="Liked a post" />
-      <User name="Chris Evans" lastAction="Joined the group" />
+    <div
+      className="border border-danger overflow-auto py-5 px-2"
+      style={{ height: "100vh", maxWidth: "45vw" }}
+    >
+      {usersData.map((user) => (
+        <User
+          key={user.id}
+          user={user}
+          lastAction={`Last action for ${user.username}`} // Pass custom last action
+          isFocused={activeUserId === user.id} // Check if this user is active
+          onClick={() => handleUserClick(user.id, `chat${user.id}`)} // Simulate chatId as `chat{id}`
+        />
+      ))}
     </div>
   );
-}
+};
 
 export default Users;
